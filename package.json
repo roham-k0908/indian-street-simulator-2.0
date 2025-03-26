@@ -1,0 +1,16 @@
+{
+  "name": "india-traffic-game",
+  "version": "1.0.0",
+  "description": "A 3D game simulating Indian traffic conditions",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx vite",
+    "build": "npx vite build"
+  },
+  "dependencies": {
+    "three": "^0.157.0"
+  },
+  "devDependencies": {
+    "vite": "^4.4.9"
+  }
+} 
