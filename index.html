@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Traffic Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+        
+        body { 
+            margin: 0; 
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            position: relative;
+        }
+        
+        canvas { 
+            display: block; 
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 18px;
+            background: linear-gradient(135deg, rgba(255, 130, 67, 0.8), rgba(226, 95, 33, 0.8));
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            border: 2px solid #fff;
+            z-index: 10;
+        }
+        
+        #score {
+            font-weight: 600;
+            font-size: 24px;
+            margin-left: 5px;
+        }
+        
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.95), rgba(21, 101, 192, 0.95));
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            display: none;
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 3px solid #fff;
+            z-index: 1000;
+        }
+        
+        #game-over h2 {
+            margin-top: 0;
+            font-size: 36px;
+            color: #FFC107;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        #game-over p {
+            font-size: 20px;
+            margin: 15px 0;
+        }
+        
+        #final-score {
+            font-weight: 700;
+            font-size: 28px;
+            color: #FFC107;
+        }
+        
+        #restart {
+            margin-top: 25px;
+            padding: 12px 30px;
+            background: linear-gradient(to right, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #restart:hover {
+            background: linear-gradient(to right, #F57C00, #E65100);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+        
+        #instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            font-size: 16px;
+            background: linear-gradient(135deg, rgba(67, 160, 71, 0.8), rgba(46, 125, 50, 0.8));
+            padding: 15px 25px;
+            border-radius: 8px;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: 2px solid #fff;
+            line-height: 1.5;
+            z-index: 10;
+        }
+        
+        #title-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1567710975615-5cb78cdbf57d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            z-index: 100; /* Higher than the game canvas but lower than the game-over screen */
+        }
+        
+        #title-screen h1 {
+            font-size: 60px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #FF9800;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+        
+        #title-screen h2 {
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 40px;
+            text-align: center;
+            color: #FFC107;
+        }
+        
+        #title-screen button {
+            padding: 15px 40px;
+            background: linear-gradient(to right, #FF9800, #F57C00);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 22px;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        #title-screen button:hover {
+            background: linear-gradient(to right, #F57C00, #E65100);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+        }
+        
+        #tricolor {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            width: 40px;
+            height: 60px;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        
+        .flag-section {
+            flex: 1;
+        }
+        
+        .saffron {
+            background-color: #FF9933;
+        }
+        
+        .white {
+            background-color: #FFFFFF;
+            position: relative;
+        }
+        
+        .white::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1px solid #000080;
+        }
+        
+        .green {
+            background-color: #138808;
+        }
+    </style>
+    <!-- Import Three.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+</head>
+<body>
+    <div id="title-screen">
+        <h1>Indian Traffic Challenge</h1>
+        <h2>Navigate the bustling streets of India</h2>
+        <button id="start-button">Start Driving</button>
+    </div>
+    
+    <div id="ui">Score: <span id="score">0</span></div>
+    
+    <div id="tricolor">
+        <div class="flag-section saffron"></div>
+        <div class="flag-section white"></div>
+        <div class="flag-section green"></div>
+    </div>
+    
+    <div id="game-over">
+        <h2>Game Over!</h2>
+        <p>Oops! You hit a pothole!</p>
+        <p>Final Score: <span id="final-score">0</span></p>
+        <button id="restart-button">Drive Again</button>
+    </div>
+    
+    <div id="instructions">
+        Use <b>W</b> or <b>↑</b> to accelerate, <b>S</b> or <b>↓</b> to brake.<br>
+        Use <b>A</b> or <b>←</b> to steer left, <b>D</b> or <b>→</b> to steer right.<br>
+        Press <b>H</b> to honk the horn.<br>
+        Drive carefully! Avoid potholes and other vehicles on these busy Indian streets.
+    </div>
+    
+    <!-- Move script to the end of body for proper loading -->
+    <script src="js/main.js"></script>
+</body>
+</html> 
